@@ -41,4 +41,22 @@ links = [l for l in links if l and 'all_comps/shooting/' in l]
 
 data = requests.get(f"https://fbref.com{links[0]}")
 shooting = pd.read_html(data.text, match="Shooting")[0]
-print(shooting.head())
+
+# Part 4: Cleaning and Merging scraped data with Pandas 
+shooting.columns = shooting.columns.droplevel()
+# print(shooting.head())
+
+# We have two dataframes now: matches and shooting.
+# Now combine them as they are data for the same matches
+
+team_data = matches[0].merge(shooting[["Date", "Sh", "SoT", "Dist", "FK", "PK", "PKatt"]], on="Date")
+
+# Part 5: Scraping data for multiple season and teams with loops
+# we have scraped and cleaned the data of one team so far
+
+years = list(range(2022,2020,-1))      # two seasons
+
+all_matches = []
+standings_url = "https://fbref.com/en/comps/9/2021-2022/2021-2022-Premier-League-Stats"
+# ^ might need to update links for previous years
+for year in years:
